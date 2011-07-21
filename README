@@ -1,0 +1,24 @@
+JSContractValidator is a library that aims to help development of JS intensive applications enforcing expected contracts.
+
+Sample usage:
+
+var anInterface = new Interface({
+|   // required
+    name: 'anInterface',
+    // optional: string/array
+    extends: ['baseInterface', 'otherInterface'],
+    // required, methods defined by contract
+    methods: {
+        oneMethod: null,
+        anotherMethod: null,
+        yetAnotherMethod: null
+    }
+    ['oneMethod', 'anotherMethod', 'yetAnotherMethod']
+);
+
+var myInstance = {
+	oneMethod: function() {},
+	anotherMethod: function() {}
+};
+
+Interface.ensureImplements(myInstance, anInterface);
