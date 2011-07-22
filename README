@@ -2,21 +2,7 @@ JSContractValidator is a library that aims to help development of JS intensive a
 
 Sample usage:
 
-var anInterface = new Interface({
-    // required: interface name
-    name: 'anInterface',
-    // optional: type / type array
-    extends: [baseInterface, otherInterface],
-    // required: methods defined by contract
-    methods: {
-        oneMethod: null,
-        anotherMethod: null,
-        yetAnotherMethod: null
-    }
-    // alternate way to define methods, string array
-    //methods: ['oneMethod', 'anotherMethod', 'yetAnotherMethod']
-);
-
+// our contract
 var IComponent = new Interface({
     name: 'IComponent',
     methods: {
@@ -26,7 +12,7 @@ var IComponent = new Interface({
     }
 });
 
-// some implementation of IComponent
+// an implementation of IComponent
 var myContainer = function() {
     return {
         activate: function () {},
