@@ -3,22 +3,51 @@ JSContractValidator is a library that aims to help development of JS intensive a
 Sample usage:
 
 var anInterface = new Interface({
-|   // required
+    // required: interface name
     name: 'anInterface',
-    // optional: string/array
-    extends: ['baseInterface', 'otherInterface'],
-    // required, methods defined by contract
+    // optional: type / type array
+    extends: [baseInterface, otherInterface],
+    // required: methods defined by contract
     methods: {
         oneMethod: null,
         anotherMethod: null,
         yetAnotherMethod: null
     }
-    ['oneMethod', 'anotherMethod', 'yetAnotherMethod']
+    // alternate way to define methods, string array
+    //methods: ['oneMethod', 'anotherMethod', 'yetAnotherMethod']
 );
 
-var myInstance = {
-	oneMethod: function() {},
-	anotherMethod: function() {}
-};
+var IComponent = new Interface({
+    name: 'IComponent',
+    methods: {
+        activate: emptyFn,
+        deactivate: emptyFn,
+        redraw: emptyFn
+    }
+});
 
-Interface.ensureImplements(myInstance, anInterface);
+// some implementation of IComponent
+var myContainer = function() {
+    return {
+        activate: function () {},
+        deactivate: function () {},
+        redraw: function () {},
+        saveState: function () {},
+        restoreState: function () {}
+    };
+}();
+
+// some implementation of IComponent
+var anotherContainer = function() {
+    return {
+        activate: function () {},
+        deactivate: function () {}
+    };
+}();
+
+// will be OK
+Interface.ensureImplements(myContainer, IComponent);
+
+// throws an Error since anotherContainer does not satisfy the
+// contract defined by IComponent
+Interface.ensureImplements(anotherContainer, IComponent);

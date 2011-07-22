@@ -6,7 +6,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="../tools/jsunittest.js" type="text/javascript"></script>
 
-    <script src="../js/argumentException.js" type="text/javascript"></script>
+    <script src="../js/reflection.js" type="text/javascript"></script>
     <script src="../js/interface.js" type="text/javascript"></script>
 
   <link rel="stylesheet" href="../tools/unittest.css" type="text/css" />
@@ -30,20 +30,24 @@
 <script type="text/javascript">
 // <![CDATA[
 
+var emptyFn = function () {};
+/**
+ * Test interfaces
+ */
 var IComponent = new Interface({
     name: 'IComponent',
     methods: {
-        activate: null,
-        deactivate: null,
-        redraw: null
+        activate: emptyFn,
+        deactivate: emptyFn,
+        redraw: emptyFn
     }
 });
 
 var IModule = new Interface({
     name: 'IModule',
     methods: {
-        saveState: null,
-        restoreState: null
+        saveState: emptyFn,
+        restoreState: emptyFn
     }
 });
 
@@ -62,25 +66,29 @@ var IModule = new Interface({
                 two: null
             }
         });
+
+        this.assertEqual('simple', simple.name, 'Interface name');
+        this.assertEqual('one', simple.methods[0], 'Interface method name');
+        this.assertEqual('two', simple.methods[1], 'Interface method name');
     },
 
     testCreateNull: function() {
         this.assertRaise(
-                'ArgumentException', function () {
+                'Error', function () {
             var invalid1 = new Interface();
         }, 'Interface must have a configuration');
     },
 
     testCreateEmpty: function() {
         this.assertRaise(
-                'ArgumentException', function () {
+                'Error', function () {
             var invalid1 = new Interface({});
         }, 'Interface must have a configuration');
     },
 
     testCreateWithNoName: function() {
         this.assertRaise(
-                'ArgumentException', function () {
+                'Error', function () {
             var invalid1 = new Interface({
                 methods: {
                     one: null
@@ -91,7 +99,7 @@ var IModule = new Interface({
 
     testCreateWithNoMethods: function() {
         this.assertRaise(
-                'ArgumentException', function () {
+                'Error', function () {
             var invalid1 = new Interface({
                 name: 'test'
             });
@@ -101,7 +109,7 @@ var IModule = new Interface({
     testCreateWithSimpleExtend: function() {
         var anInterface = new Interface({
             name: 'IMenuModule',
-            extends: 'IModule',
+            extends: IModule,
             methods: {}
         });
     },
@@ -109,12 +117,16 @@ var IModule = new Interface({
     testCreateWithMutipleExtend: function() {
         var anInterface = new Interface({
             name: 'IContainer',
-            extends: ['IComponent', 'IModule'],
+            extends: [IComponent, IModule],
             methods: {
                 getItems: null,
                 doLayout: null
             }
         });
+
+        this.assertEqual('IContainer', anInterface.name, 'Interface name');
+        this.assertEqual('getItems', anInterface.methods[0], 'Interface method name');
+        this.assertEqual('doLayout', anInterface.methods[1], 'Interface method name');
     },
 
     testValidateImplementsSimple: function() {
@@ -123,12 +135,12 @@ var IModule = new Interface({
                 saveState: function () {},
                 restoreState: function () {}
             };
-        };
+        }();
 
         Interface.ensureImplements(myModule, IModule);
     },
 
-    testValidateImplementsMultipleExtensions: function() {
+    testValidateImplementsMultipleInterfaces: function() {
         var myContainer = function() {
             return {
                 activate: function () {},
@@ -137,7 +149,7 @@ var IModule = new Interface({
                 saveState: function () {},
                 restoreState: function () {}
             };
-        };
+        }();
 
         Interface.ensureImplements(myContainer, IModule, IComponent);
     }
